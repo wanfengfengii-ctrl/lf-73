@@ -4,6 +4,8 @@ import IncenseCanvas from '@/components/design/IncenseCanvas.vue'
 import ToolPanel from '@/components/design/ToolPanel.vue'
 import AnalysisPanel from '@/components/design/AnalysisPanel.vue'
 import SchemeBar from '@/components/design/SchemeBar.vue'
+import BurnAnimationPanel from '@/components/design/BurnAnimationPanel.vue'
+import ComparisonPanel from '@/components/design/ComparisonPanel.vue'
 </script>
 
 <template>
@@ -29,15 +31,21 @@ import SchemeBar from '@/components/design/SchemeBar.vue'
 
     <main class="max-w-7xl mx-auto px-6 py-6">
       <div class="flex gap-6 mb-6">
-        <ToolPanel />
+        <div class="flex flex-col gap-4">
+          <ToolPanel />
+          <BurnAnimationPanel />
+        </div>
 
-        <div class="flex-1 flex items-start justify-center">
+        <div class="flex-1 flex flex-col items-center gap-4">
           <div class="relative">
             <IncenseCanvas />
           </div>
         </div>
 
-        <AnalysisPanel />
+        <div class="flex flex-col gap-4">
+          <AnalysisPanel />
+          <ComparisonPanel />
+        </div>
       </div>
 
       <SchemeBar />

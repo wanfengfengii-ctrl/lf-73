@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Component } from 'vue'
+
 defineProps<{
   label: string
   value: string
@@ -6,6 +8,7 @@ defineProps<{
   highlight?: boolean
   warning?: boolean
   danger?: boolean
+  icon?: Component
 }>()
 </script>
 
@@ -18,7 +21,20 @@ defineProps<{
       'border-red-200 bg-red-50': danger,
     }"
   >
-    <div class="text-xs text-stone-500 mb-1">{{ label }}</div>
+    <div class="flex items-center justify-between mb-1">
+      <div class="text-xs text-stone-500">{{ label }}</div>
+      <component
+        v-if="icon"
+        :is="icon"
+        class="w-4 h-4"
+        :class="{
+          'text-amber-500': highlight,
+          'text-yellow-500': warning,
+          'text-red-500': danger,
+          'text-stone-400': !highlight && !warning && !danger,
+        }"
+      />
+    </div>
     <div
       class="text-xl font-bold"
       :class="{

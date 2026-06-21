@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Brush, Flame, Eraser, RotateCcw, Trash2 } from 'lucide-vue-next'
+import { Brush, Flame, Eraser, RotateCcw, RotateCw, Trash2, CornerDownRight, Wrench } from 'lucide-vue-next'
 import { useDesignStore } from '@/stores/designStore'
 import SliderInput from '@/components/ui/SliderInput.vue'
 import type { ToolType } from '@/types/incense'
@@ -8,14 +8,17 @@ import {
   MAX_LINE_WIDTH,
   MIN_DENSITY,
   MAX_DENSITY,
+  MIN_ERASER_SIZE,
+  MAX_ERASER_SIZE,
 } from '@/utils/constants'
 
 const store = useDesignStore()
 
-const tools: { type: ToolType; icon: any; label: string }[] = [
-  { type: 'brush', icon: Brush, label: '画笔' },
-  { type: 'ignition', icon: Flame, label: '起燃点' },
-  { type: 'eraser', icon: Eraser, label: '橡皮擦' },
+const tools: { type: ToolType; icon: any; label: string; description: string }[] = [
+  { type: 'brush', icon: Brush, label: '画笔', description: '绘制新的香线路径' },
+  { type: 'continue', icon: CornerDownRight, label: '续画', description: '从端点继续绘制' },
+  { type: 'ignition', icon: Flame, label: '起燃点', description: '设置燃烧起始点' },
+  { type: 'eraser', icon: Eraser, label: '橡皮擦', description: '擦除已有路径' },
 ]
 
 function selectTool(tool: ToolType) {
@@ -31,6 +34,16 @@ function clearCanvas() {
 function undoLast() {
   store.undoStroke()
 }
+
+function redoLast() {
+  store.redoStroke()
+}
+
+function repairAllBreaks() {
+  if (store.analysis.breakPoints.length > 0) {
+    store.repairAllBreakPoints()
+  }
+}
 </script>
 
 <template>
@@ -40,12 +53,12 @@ function undoLast() {
         <span class="w-1 h-4 bg-amber-600 rounded-full"></span>
         绘图工具
       </h3>
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-2 gap-2">
         <button
           v-for="tool in tools"
           :key="tool.type"
           @click="selectTool(tool.type)"
-          class="flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all"
+          class="flex flex-col items-center gap-1.5 p-3 rounded-lg transition-all group relative"
           :class="{
             'bg-amber-50 border-2 border-amber-500 text-amber-700':
               store.currentTool === tool.type,
@@ -55,6 +68,11 @@ function undoLast() {
         >
           <component :is="tool.icon" class="w-5 h-5" />
           <span class="text-xs font-medium">{{ tool.label }}</span>
+          
+          <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-stone-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+            {{ tool.description }}
+            <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-stone-800"></div>
+          </div>
         </button>
       </div>
     </div>
@@ -81,6 +99,34 @@ function undoLast() {
           label="香粉密度"
           unit="g/cm³"
         />
+        <SliderInput
+          v-if="store.currentTool === 'eraser'"
+          v-model="store.eraserSize"
+          :min="MIN_ERASER_SIZE"
+          :max="MAX_ERASER_SIZE"
+          :step="1"
+          label="橡皮擦大小"
+          unit="px"
+        />
+      </div>
+    </div>
+
+    <div v-if="store.analysis.breakPoints.length > 0" class="border-t border-stone-100 pt-5">
+      <h3 class="text-sm font-semibold text-stone-800 mb-3 flex items-center gap-2">
+        <span class="w-1 h-4 bg-orange-500 rounded-full"></span>
+        断点修复
+      </h3>
+      <div class="space-y-2">
+        <p class="text-xs text-stone-600">
+          检测到 <span class="font-semibold text-orange-600">{{ store.analysis.breakPoints.length }}</span> 处断点
+        </p>
+        <button
+          @click="repairAllBreaks"
+          class="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-orange-50 text-orange-600 hover:bg-orange-100 border border-orange-200"
+        >
+          <Wrench class="w-4 h-4" />
+          一键修复所有断点
+        </button>
       </div>
     </div>
 
@@ -89,26 +135,34 @@ function undoLast() {
         <span class="w-1 h-4 bg-stone-400 rounded-full"></span>
         操作
       </h3>
-      <div class="flex gap-2">
+      <div class="flex gap-2 mb-2">
         <button
           @click="undoLast"
-          :disabled="store.strokes.length === 0 && store.currentStroke.length === 0"
+          :disabled="!store.canUndo && store.strokes.length === 0 && store.currentStroke.length === 0"
           class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-stone-100 text-stone-700 hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <RotateCcw class="w-4 h-4" />
           撤销
         </button>
         <button
-          @click="clearCanvas"
-          :disabled="store.strokes.length === 0 && store.currentStroke.length === 0"
-          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          @click="redoLast"
+          :disabled="!store.canRedo"
+          class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-stone-100 text-stone-700 hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          <Trash2 class="w-4 h-4" />
-          清空
+          <RotateCw class="w-4 h-4" />
+          重做
         </button>
       </div>
+      <button
+        @click="clearCanvas"
+        :disabled="store.strokes.length === 0 && store.currentStroke.length === 0"
+        class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        <Trash2 class="w-4 h-4" />
+        清空画布
+      </button>
       <p class="text-xs text-stone-400 mt-2 text-center">
-        当前 {{ store.strokeCount }} 笔
+        当前 {{ store.strokeCount }} 笔 · 历史记录 {{ store.canUndo ? '有' : '无' }}
       </p>
     </div>
   </div>
