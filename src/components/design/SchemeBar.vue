@@ -12,7 +12,7 @@ const { schemes, addScheme, deleteScheme, generateId, generateSchemeName, loadSc
 const schemeName = ref('')
 
 const canSave = computed(() => {
-  return store.analysis.isValid && store.points.length > 1
+  return store.analysis.isValid && store.allPoints.length > 1
 })
 
 function handleSave() {

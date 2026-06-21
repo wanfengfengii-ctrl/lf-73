@@ -23,16 +23,13 @@ function selectTool(tool: ToolType) {
 }
 
 function clearCanvas() {
-  if (confirm('确定要清空画布吗？')) {
-    store.clearPath()
+  if (confirm('确定要清空画布吗？所有笔画都会被清除。')) {
+    store.clearAll()
   }
 }
 
 function undoLast() {
-  if (store.points.length > 0) {
-    const newPoints = store.points.slice(0, -1)
-    store.setPoints(newPoints)
-  }
+  store.undoStroke()
 }
 </script>
 
@@ -95,7 +92,7 @@ function undoLast() {
       <div class="flex gap-2">
         <button
           @click="undoLast"
-          :disabled="store.points.length === 0"
+          :disabled="store.strokes.length === 0 && store.currentStroke.length === 0"
           class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-stone-100 text-stone-700 hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <RotateCcw class="w-4 h-4" />
@@ -103,13 +100,16 @@ function undoLast() {
         </button>
         <button
           @click="clearCanvas"
-          :disabled="store.points.length === 0"
+          :disabled="store.strokes.length === 0 && store.currentStroke.length === 0"
           class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all bg-red-50 text-red-600 hover:bg-red-100 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <Trash2 class="w-4 h-4" />
           清空
         </button>
       </div>
+      <p class="text-xs text-stone-400 mt-2 text-center">
+        当前 {{ store.strokeCount }} 笔
+      </p>
     </div>
   </div>
 </template>
