@@ -1,35 +1,21 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Plus, Trash2, Leaf, Flame, Scale } from 'lucide-vue-next'
-import { useEnvironmentAdaptation } from '@/composables/useEnvironmentAdaptation'
-import type { PowderIngredient } from '@/types/incense'
+import { useEnvironmentAdaptationStore } from '@/stores/environmentAdaptationStore'
 
-const adaptation = useEnvironmentAdaptation()
-const {
-  ingredients,
-  totalRatio,
-  binderRatio,
-  burnRateFactor,
-  stabilityFactor,
-  updateIngredient,
-  addIngredient,
-  removeIngredient,
-  getAvailablePowders,
-} = adaptation
+const store = useEnvironmentAdaptationStore()
 
-const availablePowders = computed(() => getAvailablePowders())
 const isBinder = (name: string) =>
   ['楠木粘粉', '榆树皮粉', '粘粉'].some((b) => name.includes(b))
 
 function handleRatioChange(index: number, value: string) {
   const num = parseFloat(value) || 0
-  updateIngredient(index, { ratio: Math.max(0, Math.min(100, num)) })
+  store.updateIngredient(index, { ratio: Math.max(0, Math.min(100, num)) })
 }
 
 function handleNameChange(index: number, name: string) {
-  const powder = availablePowders.value.find((p) => p.name === name)
+  const powder = store.getAvailablePowders().find((p) => p.name === name)
   if (powder) {
-    updateIngredient(index, {
+    store.updateIngredient(index, {
       name: powder.name,
       burnRateFactor: powder.burnRateFactor,
       stabilityFactor: powder.stabilityFactor,
@@ -50,12 +36,12 @@ function handleNameChange(index: number, name: string) {
           <div class="flex items-center gap-1">
             <Flame class="w-3.5 h-3.5 text-orange-500" />
             <span class="text-stone-500">燃速</span>
-            <span class="font-semibold text-amber-700">{{ burnRateFactor.toFixed(2) }}</span>
+            <span class="font-semibold text-amber-700">{{ store.burnRateFactor.toFixed(2) }}</span>
           </div>
           <div class="flex items-center gap-1">
             <Scale class="w-3.5 h-3.5 text-green-600" />
             <span class="text-stone-500">稳定</span>
-            <span class="font-semibold text-amber-700">{{ stabilityFactor.toFixed(2) }}</span>
+            <span class="font-semibold text-amber-700">{{ store.stabilityFactor.toFixed(2) }}</span>
           </div>
         </div>
       </div>
@@ -63,7 +49,7 @@ function handleNameChange(index: number, name: string) {
 
     <div class="p-4 space-y-3">
       <div
-        v-for="(ingredient, index) in ingredients"
+        v-for="(ingredient, index) in store.ingredients"
         :key="index"
         class="flex items-center gap-3 p-3 rounded-lg bg-stone-50 border border-stone-100"
       >
@@ -79,7 +65,7 @@ function handleNameChange(index: number, name: string) {
             @change="(e) => handleNameChange(index, (e.target as HTMLSelectElement).value)"
             class="w-full px-2 py-1.5 text-sm bg-white border border-stone-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400"
           >
-            <option v-for="p in availablePowders" :key="p.name" :value="p.name">
+            <option v-for="p in store.getAvailablePowders()" :key="p.name" :value="p.name">
               {{ p.name }}
             </option>
           </select>
@@ -104,8 +90,8 @@ function handleNameChange(index: number, name: string) {
         </div>
 
         <button
-          @click="removeIngredient(index)"
-          :disabled="ingredients.length <= 1"
+          @click="store.removeIngredient(index)"
+          :disabled="store.ingredients.length <= 1"
           class="p-1.5 rounded-md text-stone-400 hover:text-red-500 hover:bg-red-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
         >
           <Trash2 class="w-4 h-4" />
@@ -113,7 +99,7 @@ function handleNameChange(index: number, name: string) {
       </div>
 
       <button
-        @click="addIngredient()"
+        @click="store.addIngredient()"
         class="w-full py-2.5 flex items-center justify-center gap-2 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-dashed border-amber-300 rounded-lg transition-colors"
       >
         <Plus class="w-4 h-4" />
@@ -127,18 +113,18 @@ function handleNameChange(index: number, name: string) {
           <span class="text-stone-500">配方总计</span>
           <span
             class="font-bold px-2 py-0.5 rounded"
-            :class="totalRatio === 100 ? 'text-green-700 bg-green-50' : 'text-amber-700 bg-amber-50'"
+            :class="store.totalRatio === 100 ? 'text-green-700 bg-green-50' : 'text-amber-700 bg-amber-50'"
           >
-            {{ totalRatio }}%
+            {{ store.totalRatio }}%
           </span>
         </div>
         <div class="flex items-center gap-2">
           <span class="text-stone-500">粘粉占比</span>
           <span
             class="font-bold px-2 py-0.5 rounded"
-            :class="binderRatio >= 10 && binderRatio <= 30 ? 'text-green-700 bg-green-50' : 'text-amber-700 bg-amber-50'"
+            :class="store.binderRatio >= 10 && store.binderRatio <= 30 ? 'text-green-700 bg-green-50' : 'text-amber-700 bg-amber-50'"
           >
-            {{ binderRatio.toFixed(1) }}%
+            {{ store.binderRatio.toFixed(1) }}%
           </span>
         </div>
       </div>

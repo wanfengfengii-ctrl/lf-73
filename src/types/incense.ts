@@ -143,6 +143,91 @@ export interface AdaptationScenario {
   result: AdaptationResult
 }
 
+export interface FlameoutRecord {
+  position: { x: number; y: number }
+  pathProgress: number
+  timestamp: number
+  reason?: string
+}
+
+export interface AshLinePhoto {
+  id: string
+  dataUrl: string
+  caption?: string
+  timestamp: number
+}
+
+export type IgnitionResult = 'full_success' | 'partial_flameout' | 'complete_failure' | 'delayed_ignition'
+
+export type ExperimentStatus = 'draft' | 'recording' | 'completed' | 'reviewed'
+
+export interface ExperimentRecord {
+  id: string
+  name: string
+  schemeId?: string
+  schemeSnapshot?: IncenseScheme
+  status: ExperimentStatus
+  createdAt: number
+  completedAt?: number
+  recipe: PowderIngredient[]
+  environment: EnvironmentParams
+  theoreticalAnalysis: {
+    estimatedBurnTime: number
+    combustionStability: number
+    flameoutProbability: number
+    ashLineQuality: number
+    burnTimeDeviation: number
+    overallScore: number
+  }
+  actualResult: {
+    ignitionResult: IgnitionResult
+    actualBurnTime: number | null
+    flameoutRecords: FlameoutRecord[]
+    ashLinePhotos: AshLinePhoto[]
+    ashLineQualityScore: number | null
+    notes: string
+  }
+  review?: ExperimentReview
+}
+
+export interface ParameterDeviation {
+  parameter: string
+  label: string
+  theoretical: number
+  actual: number
+  deviation: number
+  deviationPercent: number
+  severity: 'low' | 'medium' | 'high'
+}
+
+export interface ExperimentReview {
+  id: string
+  experimentId: string
+  createdAt: number
+  deviations: ParameterDeviation[]
+  burnTimeDeviation: ParameterDeviation | null
+  flameoutAnalysis: string
+  ashLineAnalysis: string
+  overallConclusion: string
+  nextOptimizationSuggestions: OptimizationSuggestion[]
+  experienceTags: string[]
+  stabilityScore: number
+}
+
+export const IGNITION_RESULT_LABELS: Record<IgnitionResult, string> = {
+  full_success: '完全成功',
+  partial_flameout: '部分断火',
+  complete_failure: '完全熄灭',
+  delayed_ignition: '延迟点燃',
+}
+
+export const EXPERIMENT_STATUS_LABELS: Record<ExperimentStatus, string> = {
+  draft: '草稿',
+  recording: '记录中',
+  completed: '已完成',
+  reviewed: '已复盘',
+}
+
 export const DEFAULT_POWDERS = [
   { name: '沉香粉', burnRateFactor: 0.9, stabilityFactor: 1.1 },
   { name: '檀香粉', burnRateFactor: 1.0, stabilityFactor: 1.0 },

@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Activity, AlertTriangle, Sparkles, Clock, Trophy, Zap } from 'lucide-vue-next'
-import { useEnvironmentAdaptation } from '@/composables/useEnvironmentAdaptation'
+import { Activity, AlertTriangle, Sparkles, Clock, Trophy, Zap, Flame } from 'lucide-vue-next'
+import { useEnvironmentAdaptationStore } from '@/stores/environmentAdaptationStore'
 
-const adaptation = useEnvironmentAdaptation()
-const { adaptationResult, getOptimizedRecipe, applyOptimizedRecipe } = adaptation
+const store = useEnvironmentAdaptationStore()
 
 const scoreLevel = computed(() => {
-  const score = adaptationResult.value.overallScore
+  const score = store.adaptationResult.overallScore
   if (score >= 85) return { label: '优秀', color: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200' }
   if (score >= 70) return { label: '良好', color: 'text-amber-700', bg: 'bg-amber-50', border: 'border-amber-200' }
   if (score >= 50) return { label: '一般', color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-orange-200' }
@@ -23,7 +22,7 @@ function getMetricColor(value: number, isInverted = false) {
 }
 
 function handleOptimize() {
-  applyOptimizedRecipe()
+  store.applyOptimizedRecipe()
 }
 </script>
 
@@ -55,7 +54,7 @@ function handleOptimize() {
             <div>
               <div class="text-xs text-stone-500">综合适配评分</div>
               <div :class="['text-2xl font-bold', scoreLevel.color]">
-                {{ adaptationResult.overallScore.toFixed(0) }}
+                {{ store.adaptationResult.overallScore.toFixed(0) }}
                 <span class="text-sm font-normal text-stone-400">/ 100</span>
               </div>
             </div>
@@ -66,73 +65,73 @@ function handleOptimize() {
         </div>
         <div class="mt-3 h-2.5 bg-stone-200 rounded-full overflow-hidden">
           <div
-            :class="['h-full rounded-full transition-all duration-500', getMetricColor(adaptationResult.overallScore).bg]"
-            :style="{ width: `${adaptationResult.overallScore}%` }"
+            :class="['h-full rounded-full transition-all duration-500', getMetricColor(store.adaptationResult.overallScore).bg]"
+            :style="{ width: `${store.adaptationResult.overallScore}%` }"
           ></div>
         </div>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
-        <div :class="['p-3 rounded-lg border', getMetricColor(adaptationResult.combustionStability).lightBg, 'border-stone-100']">
+        <div :class="['p-3 rounded-lg border', getMetricColor(store.adaptationResult.combustionStability).lightBg, 'border-stone-100']">
           <div class="flex items-center gap-1.5 mb-1">
             <Flame class="w-4 h-4 text-orange-500" />
             <span class="text-xs text-stone-600">燃烧稳定性</span>
           </div>
-          <div :class="['text-xl font-bold', getMetricColor(adaptationResult.combustionStability).text]">
-            {{ adaptationResult.combustionStability.toFixed(0) }}%
+          <div :class="['text-xl font-bold', getMetricColor(store.adaptationResult.combustionStability).text]">
+            {{ store.adaptationResult.combustionStability.toFixed(0) }}%
           </div>
           <div class="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
             <div
-              :class="['h-full rounded-full transition-all duration-500', getMetricColor(adaptationResult.combustionStability).bg]"
-              :style="{ width: `${adaptationResult.combustionStability}%` }"
+              :class="['h-full rounded-full transition-all duration-500', getMetricColor(store.adaptationResult.combustionStability).bg]"
+              :style="{ width: `${store.adaptationResult.combustionStability}%` }"
             ></div>
           </div>
         </div>
 
-        <div :class="['p-3 rounded-lg border', getMetricColor(adaptationResult.flameoutProbability, true).lightBg, 'border-stone-100']">
+        <div :class="['p-3 rounded-lg border', getMetricColor(store.adaptationResult.flameoutProbability, true).lightBg, 'border-stone-100']">
           <div class="flex items-center gap-1.5 mb-1">
             <AlertTriangle class="w-4 h-4 text-red-500" />
             <span class="text-xs text-stone-600">断火概率</span>
           </div>
-          <div :class="['text-xl font-bold', getMetricColor(adaptationResult.flameoutProbability, true).text]">
-            {{ adaptationResult.flameoutProbability.toFixed(0) }}%
+          <div :class="['text-xl font-bold', getMetricColor(store.adaptationResult.flameoutProbability, true).text]">
+            {{ store.adaptationResult.flameoutProbability.toFixed(0) }}%
           </div>
           <div class="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
             <div
-              :class="['h-full rounded-full transition-all duration-500', getMetricColor(100 - adaptationResult.flameoutProbability).bg]"
-              :style="{ width: `${adaptationResult.flameoutProbability}%` }"
+              :class="['h-full rounded-full transition-all duration-500', getMetricColor(100 - store.adaptationResult.flameoutProbability).bg]"
+              :style="{ width: `${store.adaptationResult.flameoutProbability}%` }"
             ></div>
           </div>
         </div>
 
-        <div :class="['p-3 rounded-lg border', getMetricColor(adaptationResult.ashLineQuality).lightBg, 'border-stone-100']">
+        <div :class="['p-3 rounded-lg border', getMetricColor(store.adaptationResult.ashLineQuality).lightBg, 'border-stone-100']">
           <div class="flex items-center gap-1.5 mb-1">
             <Sparkles class="w-4 h-4 text-amber-500" />
             <span class="text-xs text-stone-600">灰线成型</span>
           </div>
-          <div :class="['text-xl font-bold', getMetricColor(adaptationResult.ashLineQuality).text]">
-            {{ adaptationResult.ashLineQuality.toFixed(0) }}%
+          <div :class="['text-xl font-bold', getMetricColor(store.adaptationResult.ashLineQuality).text]">
+            {{ store.adaptationResult.ashLineQuality.toFixed(0) }}%
           </div>
           <div class="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
             <div
-              :class="['h-full rounded-full transition-all duration-500', getMetricColor(adaptationResult.ashLineQuality).bg]"
-              :style="{ width: `${adaptationResult.ashLineQuality}%` }"
+              :class="['h-full rounded-full transition-all duration-500', getMetricColor(store.adaptationResult.ashLineQuality).bg]"
+              :style="{ width: `${store.adaptationResult.ashLineQuality}%` }"
             ></div>
           </div>
         </div>
 
-        <div :class="['p-3 rounded-lg border', getMetricColor(adaptationResult.burnTimeDeviation, true).lightBg, 'border-stone-100']">
+        <div :class="['p-3 rounded-lg border', getMetricColor(store.adaptationResult.burnTimeDeviation, true).lightBg, 'border-stone-100']">
           <div class="flex items-center gap-1.5 mb-1">
             <Clock class="w-4 h-4 text-blue-500" />
             <span class="text-xs text-stone-600">燃烧偏差</span>
           </div>
-          <div :class="['text-xl font-bold', getMetricColor(adaptationResult.burnTimeDeviation, true).text]">
-            ±{{ adaptationResult.burnTimeDeviation.toFixed(0) }}%
+          <div :class="['text-xl font-bold', getMetricColor(store.adaptationResult.burnTimeDeviation, true).text]">
+            ±{{ store.adaptationResult.burnTimeDeviation.toFixed(0) }}%
           </div>
           <div class="mt-2 h-1.5 bg-stone-200 rounded-full overflow-hidden">
             <div
-              :class="['h-full rounded-full transition-all duration-500', getMetricColor(100 - adaptationResult.burnTimeDeviation * 2).bg]"
-              :style="{ width: `${Math.min(adaptationResult.burnTimeDeviation * 2, 100)}%` }"
+              :class="['h-full rounded-full transition-all duration-500', getMetricColor(100 - store.adaptationResult.burnTimeDeviation * 2).bg]"
+              :style="{ width: `${Math.min(store.adaptationResult.burnTimeDeviation * 2, 100)}%` }"
             ></div>
           </div>
         </div>
@@ -140,10 +139,3 @@ function handleOptimize() {
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { Flame } from 'lucide-vue-next'
-export default {
-  components: { Flame }
-}
-</script>

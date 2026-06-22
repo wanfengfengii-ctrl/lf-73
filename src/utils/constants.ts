@@ -58,3 +58,9 @@ export const OPTIMAL_ASH_BED_MAX = 8
 export const BINDER_MIN_RATIO = 10
 export const BINDER_OPTIMAL_RATIO = 15
 export const BINDER_MAX_RATIO = 30
+
+export const EXPERIMENT_STORAGE_KEY = 'incense_experiments'
+
+export const DEVIATION_SEVERITY_LOW = 10
+export const DEVIATION_SEVERITY_MEDIUM = 25
+export const DEVIATION_SEVERITY_HIGH = 50

@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { BarChart3, Flame, AlertTriangle, Sparkles, Clock, CheckCircle, MapPin } from 'lucide-vue-next'
-import { useEnvironmentAdaptation } from '@/composables/useEnvironmentAdaptation'
+import { useEnvironmentAdaptationStore } from '@/stores/environmentAdaptationStore'
 
-const adaptation = useEnvironmentAdaptation()
-const { scenarioAnalysis, setEnvironment } = adaptation
+const store = useEnvironmentAdaptationStore()
 
 const sortedScenarios = computed(() => {
-  return [...scenarioAnalysis.value].sort(
+  return [...store.scenarioAnalysis].sort(
     (a, b) => b.result.overallScore - a.result.overallScore
   )
 })
 
 const bestScenario = computed(() => sortedScenarios.value[0])
-const worstScenario = computed(() => sortedScenarios.value[sortedScenarios.value.length - 1])
 
 function getScoreColor(score: number) {
   if (score >= 85) return 'text-green-700 bg-green-50 border-green-200'
@@ -49,7 +47,7 @@ function getBarColor(score: number) {
         v-for="scenario in sortedScenarios"
         :key="scenario.name"
         class="p-3 rounded-lg border border-stone-100 hover:border-amber-200 hover:bg-amber-50/30 transition-all cursor-pointer group"
-        @click="setEnvironment(scenario.params)"
+        @click="store.setEnvironment(scenario.params)"
       >
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">

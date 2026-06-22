@@ -2,21 +2,17 @@
 import { computed } from 'vue'
 import {
   Lightbulb,
-  AlertCircle,
   Info,
   Droplets,
-  Thermometer,
-  Wind,
   Layers,
   Leaf,
   Hand,
   ChevronRight,
 } from 'lucide-vue-next'
-import { useEnvironmentAdaptation } from '@/composables/useEnvironmentAdaptation'
+import { useEnvironmentAdaptationStore } from '@/stores/environmentAdaptationStore'
 import type { OptimizationSuggestion } from '@/types/incense'
 
-const adaptation = useEnvironmentAdaptation()
-const { suggestions, updateEnvironment, updateIngredient, environment, ingredients } = adaptation
+const store = useEnvironmentAdaptationStore()
 
 function getCategoryIcon(category: string) {
   switch (category) {
@@ -105,37 +101,37 @@ function applySuggestion(suggestion: OptimizationSuggestion) {
 
   const param = suggestion.parameter
   if (param === 'humidity' || param === 'temperature' || param === 'airflow' || param === 'ashBedThickness') {
-    updateEnvironment({ [param]: suggestion.targetValue })
+    store.updateEnvironment({ [param]: suggestion.targetValue })
   } else if (param === 'totalRatio') {
     const diff = suggestion.targetValue - suggestion.currentValue!
-    if (ingredients.value.length > 0) {
-      const perItem = diff / ingredients.value.length
-      ingredients.value.forEach((_, i) => {
-        updateIngredient(i, { ratio: ingredients.value[i].ratio + perItem })
+    if (store.ingredients.length > 0) {
+      const perItem = diff / store.ingredients.length
+      store.ingredients.forEach((_, i) => {
+        store.updateIngredient(i, { ratio: store.ingredients[i].ratio + perItem })
       })
     }
   } else if (param === 'binderRatio') {
     const binderNames = ['楠木粘粉', '榆树皮粉', '粘粉']
-    const binderIndex = ingredients.value.findIndex((i) =>
+    const binderIndex = store.ingredients.findIndex((i) =>
       binderNames.some((b) => i.name.includes(b))
     )
     if (binderIndex >= 0) {
-      const total = ingredients.value.reduce((sum, i) => sum + i.ratio, 0)
+      const total = store.ingredients.reduce((sum, i) => sum + i.ratio, 0)
       const newBinderRatio = (suggestion.targetValue / 100) * total
-      updateIngredient(binderIndex, { ratio: newBinderRatio })
+      store.updateIngredient(binderIndex, { ratio: newBinderRatio })
     }
   } else {
-    const ingredientIndex = ingredients.value.findIndex((i) => i.name === param)
+    const ingredientIndex = store.ingredients.findIndex((i) => i.name === param)
     if (ingredientIndex >= 0 && suggestion.targetValue !== undefined) {
-      updateIngredient(ingredientIndex, { ratio: suggestion.targetValue })
+      store.updateIngredient(ingredientIndex, { ratio: suggestion.targetValue })
     }
   }
 }
 
 const suggestionsByPriority = computed(() => {
-  const high = suggestions.value.filter((s) => s.priority === 'high')
-  const medium = suggestions.value.filter((s) => s.priority === 'medium')
-  const low = suggestions.value.filter((s) => s.priority === 'low')
+  const high = store.suggestions.filter((s) => s.priority === 'high')
+  const medium = store.suggestions.filter((s) => s.priority === 'medium')
+  const low = store.suggestions.filter((s) => s.priority === 'low')
   return { high, medium, low }
 })
 </script>
@@ -150,13 +146,13 @@ const suggestionsByPriority = computed(() => {
         </div>
         <div class="flex items-center gap-1 text-xs text-stone-500">
           <span>共</span>
-          <span class="font-bold text-amber-700">{{ suggestions.length }}</span>
+          <span class="font-bold text-amber-700">{{ store.suggestions.length }}</span>
           <span>条</span>
         </div>
       </div>
     </div>
 
-    <div v-if="suggestions.length === 0" class="p-8 text-center">
+    <div v-if="store.suggestions.length === 0" class="p-8 text-center">
       <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-green-100 flex items-center justify-center">
         <Info class="w-8 h-8 text-green-600" />
       </div>
