@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { Sparkles } from 'lucide-vue-next'
+import { ref } from 'vue'
+import { Sparkles, Palette, Settings2 } from 'lucide-vue-next'
 import IncenseCanvas from '@/components/design/IncenseCanvas.vue'
 import ToolPanel from '@/components/design/ToolPanel.vue'
 import AnalysisPanel from '@/components/design/AnalysisPanel.vue'
 import SchemeBar from '@/components/design/SchemeBar.vue'
 import BurnAnimationPanel from '@/components/design/BurnAnimationPanel.vue'
 import ComparisonPanel from '@/components/design/ComparisonPanel.vue'
+import PowderRecipeEditor from '@/components/adaptation/PowderRecipeEditor.vue'
+import EnvironmentParamsInput from '@/components/adaptation/EnvironmentParamsInput.vue'
+import AdaptationAnalysisPanel from '@/components/adaptation/AdaptationAnalysisPanel.vue'
+import OptimizationSuggestions from '@/components/adaptation/OptimizationSuggestions.vue'
+import ScenarioComparisonPanel from '@/components/adaptation/ScenarioComparisonPanel.vue'
+
+type TabType = 'design' | 'adaptation'
+const activeTab = ref<TabType>('adaptation')
 </script>
 
 <template>
@@ -22,33 +31,76 @@ import ComparisonPanel from '@/components/design/ComparisonPanel.vue'
               <p class="text-xs text-stone-400">Incense Pattern Designer</p>
             </div>
           </div>
-          <div class="text-sm text-stone-400">
-            绘制香篆 · 估算燃烧 · 创意设计
+          <div class="flex items-center gap-2 bg-stone-700/50 p-1 rounded-lg">
+            <button
+              @click="activeTab = 'design'"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-all',
+                activeTab === 'design'
+                  ? 'bg-amber-500 text-white shadow-md'
+                  : 'text-stone-300 hover:text-white hover:bg-stone-600/50',
+              ]"
+            >
+              <Palette class="w-4 h-4" />
+              图案设计
+            </button>
+            <button
+              @click="activeTab = 'adaptation'"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-all',
+                activeTab === 'adaptation'
+                  ? 'bg-amber-500 text-white shadow-md'
+                  : 'text-stone-300 hover:text-white hover:bg-stone-600/50',
+              ]"
+            >
+              <Settings2 class="w-4 h-4" />
+              环境适配
+            </button>
           </div>
         </div>
       </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-6 py-6">
-      <div class="flex gap-6 mb-6">
-        <div class="flex flex-col gap-4">
-          <ToolPanel />
-          <BurnAnimationPanel />
-        </div>
+      <template v-if="activeTab === 'design'">
+        <div class="flex gap-6 mb-6">
+          <div class="flex flex-col gap-4">
+            <ToolPanel />
+            <BurnAnimationPanel />
+          </div>
 
-        <div class="flex-1 flex flex-col items-center gap-4">
-          <div class="relative">
-            <IncenseCanvas />
+          <div class="flex-1 flex flex-col items-center gap-4">
+            <div class="relative">
+              <IncenseCanvas />
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4">
+            <AnalysisPanel />
+            <ComparisonPanel />
           </div>
         </div>
 
-        <div class="flex flex-col gap-4">
-          <AnalysisPanel />
-          <ComparisonPanel />
-        </div>
-      </div>
+        <SchemeBar />
+      </template>
 
-      <SchemeBar />
+      <template v-else>
+        <div class="grid grid-cols-12 gap-6">
+          <div class="col-span-4 flex flex-col gap-4">
+            <PowderRecipeEditor />
+            <EnvironmentParamsInput />
+          </div>
+
+          <div class="col-span-4 flex flex-col gap-4">
+            <AdaptationAnalysisPanel />
+            <OptimizationSuggestions />
+          </div>
+
+          <div class="col-span-4 flex flex-col gap-4">
+            <ScenarioComparisonPanel />
+          </div>
+        </div>
+      </template>
     </main>
 
     <footer class="mt-8 pb-6 text-center text-xs text-stone-400">

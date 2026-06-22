@@ -30,3 +30,31 @@ export const BURN_ANIMATION_SPEED = 0.5
 
 export const THUMBNAIL_WIDTH = 120
 export const THUMBNAIL_HEIGHT = 120
+
+export const DEFAULT_HUMIDITY = 50
+export const MIN_HUMIDITY = 10
+export const MAX_HUMIDITY = 90
+
+export const DEFAULT_TEMPERATURE = 22
+export const MIN_TEMPERATURE = 0
+export const MAX_TEMPERATURE = 40
+
+export const DEFAULT_AIRFLOW = 1
+export const MIN_AIRFLOW = 0
+export const MAX_AIRFLOW = 5
+
+export const DEFAULT_ASH_BED_THICKNESS = 5
+export const MIN_ASH_BED_THICKNESS = 1
+export const MAX_ASH_BED_THICKNESS = 15
+
+export const OPTIMAL_HUMIDITY_MIN = 35
+export const OPTIMAL_HUMIDITY_MAX = 65
+export const OPTIMAL_TEMPERATURE_MIN = 18
+export const OPTIMAL_TEMPERATURE_MAX = 28
+export const OPTIMAL_AIRFLOW_MAX = 2
+export const OPTIMAL_ASH_BED_MIN = 3
+export const OPTIMAL_ASH_BED_MAX = 8
+
+export const BINDER_MIN_RATIO = 10
+export const BINDER_OPTIMAL_RATIO = 15
+export const BINDER_MAX_RATIO = 30
