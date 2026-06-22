@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Save, Trash2, Plus, FileText, History, GitBranch, Clock, Ruler, X } from 'lucide-vue-next'
 import { useDesignStore } from '@/stores/designStore'
-import { useSchemeStorage } from '@/composables/useSchemeStorage'
+import { useSchemeStore } from '@/stores/schemeStore'
 import type { IncenseScheme } from '@/types/incense'
 import { PIXELS_PER_CM } from '@/utils/constants'
 
 const store = useDesignStore()
-const { schemes, addScheme, deleteScheme, generateId, generateSchemeName, loadSchemes, addVersion, loadVersion, deleteVersion } = useSchemeStorage()
+const schemeStore = useSchemeStore()
+const { schemes, addScheme, deleteScheme, generateId, generateSchemeName, loadSchemes, addVersion, loadVersion, deleteVersion, init, cleanup } = schemeStore
 
 const schemeName = ref('')
 const versionDescription = ref('')
@@ -120,7 +121,13 @@ function formatDate(timestamp: number): string {
 }
 
 onMounted(() => {
-  loadSchemes()
+  if (schemeStore.schemes.length === 0) {
+    init()
+  }
+})
+
+onUnmounted(() => {
+  cleanup()
 })
 </script>
 

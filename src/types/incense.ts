@@ -14,6 +14,7 @@ export interface Stroke {
 
 export interface IncensePath {
   points: PathPoint[]
+  strokes: PathPoint[][]
   lineWidth: number
   density: number
   ignitionPoint: PathPoint | null

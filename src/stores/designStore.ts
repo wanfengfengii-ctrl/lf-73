@@ -314,6 +314,7 @@ export const useDesignStore = defineStore('design', () => {
 
   const currentPath = computed<IncensePath>(() => ({
     points: allPoints.value,
+    strokes: strokes.value.map((s) => [...s]),
     lineWidth: lineWidth.value,
     density: density.value,
     ignitionPoint: ignitionPoint.value,
@@ -788,7 +789,9 @@ export const useDesignStore = defineStore('design', () => {
   }
 
   function loadScheme(scheme: IncenseScheme) {
-    if (scheme.path.points && scheme.path.points.length > 0) {
+    if (scheme.path.strokes && scheme.path.strokes.length > 0) {
+      strokes.value = scheme.path.strokes.map((s) => [...s])
+    } else if (scheme.path.points && scheme.path.points.length > 0) {
       strokes.value = [[...scheme.path.points]]
     } else {
       strokes.value = []
@@ -803,7 +806,9 @@ export const useDesignStore = defineStore('design', () => {
   }
 
   function loadVersion(version: SchemeVersion) {
-    if (version.path.points && version.path.points.length > 0) {
+    if (version.path.strokes && version.path.strokes.length > 0) {
+      strokes.value = version.path.strokes.map((s) => [...s])
+    } else if (version.path.points && version.path.points.length > 0) {
       strokes.value = [[...version.path.points]]
     } else {
       strokes.value = []

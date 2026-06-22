@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { BarChart3, X, Check, ArrowUpDown, Ruler, Clock, GitBranch, AlertTriangle, Layers, Sparkles } from 'lucide-vue-next'
-import { useSchemeStorage } from '@/composables/useSchemeStorage'
+import { useSchemeStore } from '@/stores/schemeStore'
 import type { IncenseScheme } from '@/types/incense'
 import { PIXELS_PER_CM } from '@/utils/constants'
 
-const { schemes } = useSchemeStorage()
+const schemeStore = useSchemeStore()
+const schemes = computed(() => schemeStore.schemes)
 
 const showComparison = ref(false)
 const selectedSchemes = ref<string[]>([])
@@ -118,7 +119,12 @@ const comparisonMetrics = computed(() => {
       icon: Sparkles,
       unit: '笔',
       isHigherBetter: false,
-      values: comparisonSchemes.value.map((s) => s.path.points.length > 0 ? 1 : 0),
+      values: comparisonSchemes.value.map((s) => {
+        if (s.path.strokes && s.path.strokes.length > 0) {
+          return s.path.strokes.filter((stroke) => stroke.length > 0).length
+        }
+        return s.path.points.length > 0 ? 1 : 0
+      }),
       format: (v: number) => v.toString(),
     },
     {
