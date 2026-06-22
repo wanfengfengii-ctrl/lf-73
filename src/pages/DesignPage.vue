@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Sparkles, Palette, Settings2 } from 'lucide-vue-next'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { Sparkles, Palette, Settings2, FlaskConical } from 'lucide-vue-next'
 import IncenseCanvas from '@/components/design/IncenseCanvas.vue'
 import ToolPanel from '@/components/design/ToolPanel.vue'
 import AnalysisPanel from '@/components/design/AnalysisPanel.vue'
@@ -12,9 +12,24 @@ import EnvironmentParamsInput from '@/components/adaptation/EnvironmentParamsInp
 import AdaptationAnalysisPanel from '@/components/adaptation/AdaptationAnalysisPanel.vue'
 import OptimizationSuggestions from '@/components/adaptation/OptimizationSuggestions.vue'
 import ScenarioComparisonPanel from '@/components/adaptation/ScenarioComparisonPanel.vue'
+import ExperimentRecordForm from '@/components/experiment/ExperimentRecordForm.vue'
+import ExperimentHistoryList from '@/components/experiment/ExperimentHistoryList.vue'
+import ReviewComparisonPanel from '@/components/experiment/ReviewComparisonPanel.vue'
+import ReviewConclusionPanel from '@/components/experiment/ReviewConclusionPanel.vue'
+import { useExperimentStore } from '@/stores/experimentStore'
 
-type TabType = 'design' | 'adaptation'
+type TabType = 'design' | 'adaptation' | 'experiment'
 const activeTab = ref<TabType>('adaptation')
+
+const experimentStore = useExperimentStore()
+
+onMounted(() => {
+  experimentStore.init()
+})
+
+onUnmounted(() => {
+  experimentStore.cleanup()
+})
 </script>
 
 <template>
@@ -56,6 +71,18 @@ const activeTab = ref<TabType>('adaptation')
               <Settings2 class="w-4 h-4" />
               环境适配
             </button>
+            <button
+              @click="activeTab = 'experiment'"
+              :class="[
+                'flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-all',
+                activeTab === 'experiment'
+                  ? 'bg-amber-500 text-white shadow-md'
+                  : 'text-stone-300 hover:text-white hover:bg-stone-600/50',
+              ]"
+            >
+              <FlaskConical class="w-4 h-4" />
+              实验复盘
+            </button>
           </div>
         </div>
       </div>
@@ -84,7 +111,7 @@ const activeTab = ref<TabType>('adaptation')
         <SchemeBar />
       </template>
 
-      <template v-else>
+      <template v-else-if="activeTab === 'adaptation'">
         <div class="grid grid-cols-12 gap-6">
           <div class="col-span-4 flex flex-col gap-4">
             <PowderRecipeEditor />
@@ -98,6 +125,23 @@ const activeTab = ref<TabType>('adaptation')
 
           <div class="col-span-4 flex flex-col gap-4">
             <ScenarioComparisonPanel />
+          </div>
+        </div>
+      </template>
+
+      <template v-else-if="activeTab === 'experiment'">
+        <div class="grid grid-cols-12 gap-6">
+          <div class="col-span-4 flex flex-col gap-4">
+            <ExperimentRecordForm />
+            <ExperimentHistoryList />
+          </div>
+
+          <div class="col-span-4 flex flex-col gap-4">
+            <ReviewComparisonPanel />
+          </div>
+
+          <div class="col-span-4 flex flex-col gap-4">
+            <ReviewConclusionPanel />
           </div>
         </div>
       </template>
