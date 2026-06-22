@@ -235,3 +235,182 @@ export const DEFAULT_POWDERS = [
   { name: '丁香粉', burnRateFactor: 1.1, stabilityFactor: 0.85 },
   { name: '楠木粘粉', burnRateFactor: 0.7, stabilityFactor: 1.3 },
 ] as const
+
+export type TeachingStepType = 'recipe' | 'ashbed' | 'path' | 'ignition' | 'recording'
+
+export interface TeachingStep {
+  id: string
+  type: TeachingStepType
+  title: string
+  order: number
+  description: string
+  instructions: string[]
+  tips: string[]
+  commonMistakes: string[]
+  requiredChecks: TeachingCheckItem[]
+  estimatedTime: number
+  demoVideoUrl?: string
+}
+
+export interface TeachingCheckItem {
+  id: string
+  label: string
+  description: string
+  validatorType: 'manual' | 'auto' | 'param'
+  parameter?: string
+  targetValue?: number
+  tolerance?: number
+}
+
+export interface TeachingTemplate {
+  id: string
+  name: string
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  description: string
+  icon: string
+  steps: TeachingStep[]
+  targetScheme?: IncenseScheme
+  targetRecipe?: PowderIngredient[]
+  targetEnvironment?: EnvironmentParams
+  prerequisites: string[]
+  learningObjectives: string[]
+}
+
+export type PracticeMode = 'tracing' | 'free' | 'challenge'
+export type PracticeStatus = 'not_started' | 'in_progress' | 'paused' | 'completed' | 'reviewed'
+
+export interface StepAction {
+  id: string
+  stepId: string
+  action: 'start' | 'complete' | 'skip' | 'hint' | 'mistake'
+  timestamp: number
+  data?: Record<string, unknown>
+}
+
+export interface TracingData {
+  templatePath: PathPoint[]
+  userPath: PathPoint[]
+  similarityScore: number
+  deviationPoints: { point: PathPoint; distance: number }[]
+}
+
+export interface CommonMistakeRecord {
+  id: string
+  type: string
+  description: string
+  severity: 'low' | 'medium' | 'high'
+  stepId: string
+  suggestion: string
+  timestamp: number
+}
+
+export interface StepScore {
+  stepId: string
+  score: number
+  maxScore: number
+  deductions: { reason: string; points: number }[]
+  bonuses: { reason: string; points: number }[]
+}
+
+export interface PracticeScore {
+  totalScore: number
+  maxScore: number
+  percentage: number
+  grade: 'S' | 'A' | 'B' | 'C' | 'D' | 'F'
+  stepScores: StepScore[]
+  accuracyScore: number
+  techniqueScore: number
+  timingScore: number
+  completenessScore: number
+}
+
+export interface PracticeRecord {
+  id: string
+  templateId: string
+  templateName: string
+  mode: PracticeMode
+  status: PracticeStatus
+  userId?: string
+  startedAt: number
+  completedAt?: number
+  currentStepIndex: number
+  completedSteps: string[]
+  actions: StepAction[]
+  recipe?: PowderIngredient[]
+  environment?: EnvironmentParams
+  userPath?: IncensePath
+  tracingData?: TracingData
+  mistakes: CommonMistakeRecord[]
+  score?: PracticeScore
+  timeSpent: number
+  hintsUsed: number
+}
+
+export interface LearningReport {
+  id: string
+  practiceId: string
+  generatedAt: number
+  overallAssessment: string
+  strengths: string[]
+  weaknesses: string[]
+  improvements: string[]
+  suggestedNextSteps: string[]
+  scoreBreakdown: {
+    category: string
+    score: number
+    maxScore: number
+    description: string
+  }[]
+  commonMistakesSummary: {
+    mistakeType: string
+    count: number
+    suggestion: string
+  }[]
+  recommendedTemplates: string[]
+}
+
+export interface SkillProgress {
+  skillId: string
+  skillName: string
+  level: number
+  maxLevel: number
+  experience: number
+  milestones: { name: string; achieved: boolean }[]
+}
+
+export const TEACHING_STEP_LABELS: Record<TeachingStepType, string> = {
+  recipe: '配方设置',
+  ashbed: '灰床处理',
+  path: '香线绘制',
+  ignition: '点燃记录',
+  recording: '燃烧观察',
+}
+
+export const PRACTICE_MODE_LABELS: Record<PracticeMode, string> = {
+  tracing: '临摹练习',
+  free: '自由练习',
+  challenge: '挑战模式',
+}
+
+export const PRACTICE_STATUS_LABELS: Record<PracticeStatus, string> = {
+  not_started: '未开始',
+  in_progress: '进行中',
+  paused: '已暂停',
+  completed: '已完成',
+  reviewed: '已评测',
+}
+
+export const DIFFICULTY_LABELS: Record<string, string> = {
+  beginner: '入门',
+  intermediate: '进阶',
+  advanced: '大师',
+}
+
+export const GRADE_LABELS: Record<string, string> = {
+  S: '优秀',
+  A: '良好',
+  B: '合格',
+  C: '待提高',
+  D: '需努力',
+  F: '不及格',
+}

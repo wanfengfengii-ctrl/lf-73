@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Sparkles, Palette, Settings2, FlaskConical } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+import { Sparkles, Palette, Settings2, FlaskConical, GraduationCap } from 'lucide-vue-next'
 import IncenseCanvas from '@/components/design/IncenseCanvas.vue'
 import ToolPanel from '@/components/design/ToolPanel.vue'
 import AnalysisPanel from '@/components/design/AnalysisPanel.vue'
@@ -21,6 +22,7 @@ import { useExperimentStore } from '@/stores/experimentStore'
 type TabType = 'design' | 'adaptation' | 'experiment'
 const activeTab = ref<TabType>('adaptation')
 
+const router = useRouter()
 const experimentStore = useExperimentStore()
 
 onMounted(() => {
@@ -82,6 +84,14 @@ onUnmounted(() => {
             >
               <FlaskConical class="w-4 h-4" />
               实验复盘
+            </button>
+            <div class="w-px h-6 bg-stone-600 mx-1"></div>
+            <button
+              @click="router.push('/teaching')"
+              class="flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-all text-stone-300 hover:text-white hover:bg-gradient-to-r hover:from-purple-500/50 hover:to-indigo-500/50"
+            >
+              <GraduationCap class="w-4 h-4" />
+              教学中心
             </button>
           </div>
         </div>

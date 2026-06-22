@@ -64,3 +64,50 @@ export const EXPERIMENT_STORAGE_KEY = 'incense_experiments'
 export const DEVIATION_SEVERITY_LOW = 10
 export const DEVIATION_SEVERITY_MEDIUM = 25
 export const DEVIATION_SEVERITY_HIGH = 50
+
+export const PRACTICE_STORAGE_KEY = 'incense_practice_records'
+export const LEARNING_REPORT_STORAGE_KEY = 'incense_learning_reports'
+export const SKILL_PROGRESS_STORAGE_KEY = 'incense_skill_progress'
+
+export const DEFAULT_STEP_SCORE = 20
+export const HINT_PENALTY = 2
+export const MAX_HINTS_PER_STEP = 3
+
+export const TRACING_SIMILARITY_THRESHOLD = 70
+export const PATH_DEVIATION_TOLERANCE = 15
+
+export const GRADE_THRESHOLDS = {
+  S: 95,
+  A: 85,
+  B: 70,
+  C: 60,
+  D: 40,
+  F: 0,
+}
+
+export const SCORE_CATEGORIES = {
+  accuracy: { weight: 0.35, label: '准确度' },
+  technique: { weight: 0.30, label: '操作技巧' },
+  timing: { weight: 0.20, label: '时间控制' },
+  completeness: { weight: 0.15, label: '完整性' },
+}
+
+export const COMMON_MISTAKE_TYPES = [
+  { type: 'recipe_wrong_ratio', label: '配方比例错误', severity: 'medium' as const },
+  { type: 'recipe_low_binder', label: '粘粉比例不足', severity: 'high' as const },
+  { type: 'recipe_high_binder', label: '粘粉比例过高', severity: 'medium' as const },
+  { type: 'ashbed_too_thin', label: '灰床太薄', severity: 'high' as const },
+  { type: 'ashbed_too_thick', label: '灰床太厚', severity: 'medium' as const },
+  { type: 'ashbed_uneven', label: '灰床不平整', severity: 'medium' as const },
+  { type: 'path_discontinuous', label: '路径不连续', severity: 'high' as const },
+  { type: 'path_overlapping', label: '路径重叠过多', severity: 'medium' as const },
+  { type: 'path_too_thin', label: '线宽太细', severity: 'low' as const },
+  { type: 'path_too_thick', label: '线宽太粗', severity: 'low' as const },
+  { type: 'path_no_ignition', label: '未设置起燃点', severity: 'high' as const },
+  { type: 'path_ignition_off', label: '起燃点不在路径上', severity: 'medium' as const },
+  { type: 'ignition_failure', label: '点燃失败', severity: 'high' as const },
+  { type: 'ignition_partial', label: '部分断火', severity: 'medium' as const },
+  { type: 'recording_incomplete', label: '记录不完整', severity: 'low' as const },
+  { type: 'timing_too_slow', label: '操作过慢', severity: 'low' as const },
+  { type: 'timing_too_fast', label: '操作过快', severity: 'low' as const },
+]
